@@ -38,6 +38,10 @@ fun HomeScreen(navController: NavController,dao:UserDao) {
     var numberPlate by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    var status:User? = null
+    var userFound by remember {
+        mutableStateOf(false)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -62,16 +66,23 @@ fun HomeScreen(navController: NavController,dao:UserDao) {
         Spacer(modifier = Modifier.size(4.dp))
         Button(onClick = {
                 scope.launch {
-                    val status: User? = dao.checkEntry(numberPlate)
+                    status = dao.checkEntry(numberPlate)
                     if(status==null){
                         Toast.makeText(context , "No User Found" , Toast.LENGTH_SHORT).show()
                     }else{
-                        Toast.makeText(context , status.name , Toast.LENGTH_SHORT).show()
+                        userFound = true
+                        Toast.makeText(context , status!!.name , Toast.LENGTH_SHORT).show()
                     }
                 }
         }) {
             Text(text = "Check")
         }
+//        if(userFound){
+//            Text(text = "Name:${status!!.name}")
+//            Text(text = "License Plate:${status!!.licensePlate}")
+//            Text(text = "Purpose:${status?.purpose}")
+//            Text(text = "Contact Number:${status?.contact}")
+//        }
     }
 }
 

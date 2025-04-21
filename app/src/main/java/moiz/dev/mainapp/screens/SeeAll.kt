@@ -11,7 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,6 +37,7 @@ import moiz.dev.mainapp.R
 import moiz.dev.mainapp.database.User
 import moiz.dev.mainapp.database.UserDao
 import moiz.dev.mainapp.ui.theme.newBlue
+import moiz.dev.mainapp.utils.Lists
 
 
 @Composable
@@ -56,7 +61,8 @@ fun SeeAll(navController: NavController, dao: UserDao) {
             Image(
                 painter = painterResource(id = R.drawable.back),
                 contentDescription = "back",
-                modifier = Modifier.align(Alignment.CenterVertically)
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
                     .size(35.dp)
                     .padding(start = 8.dp)
                     .clickable {
@@ -88,9 +94,12 @@ fun ColumnItem(item: User, dao: UserDao) {
     val scope = rememberCoroutineScope()
     Row(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(start = 4.dp)) {
-            Text(text = item.name, fontSize = 18.sp)
-            Text(text = item.licensePlate, fontSize = 14.sp)
-            Text(text = item.time, fontSize = 12.sp)
+            Text(text = item.name, fontSize = 20.sp)
+            Text(text = item.licensePlate, fontSize = 18.sp)
+            Text(text = item.time, fontSize = 16.sp)
+            if(!item.reasonForBlackList.isNullOrEmpty()){
+                Text(text = "Reson: ${item.reasonForBlackList}", fontSize = 13.sp)
+            }
         }
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(text = item.date, fontSize = 18.sp, modifier = Modifier.align(Alignment.End))
@@ -106,6 +115,18 @@ fun ColumnItem(item: User, dao: UserDao) {
                             dao.deleteUser(item)
                         }
                     }
+            )
+            Image(
+                painter = painterResource(id = R.drawable.person),
+                contentDescription = null,
+                colorFilter = if (item.list == Lists.BLACK) androidx.compose.ui.graphics.ColorFilter.tint(
+                    Color.Black
+                ) else androidx.compose.ui.graphics.ColorFilter.tint(
+                    Color.Transparent),
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .size(32.dp)
+                    .padding(top = 2.dp, bottom = 2.dp)
             )
         }
     }

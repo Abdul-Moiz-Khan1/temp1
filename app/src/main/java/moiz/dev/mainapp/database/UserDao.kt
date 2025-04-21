@@ -25,7 +25,12 @@ interface UserDao {
     @Query("SELECT * FROM USER WHERE name LIKE '%' || :name || '%' OR licensePlate LIKE '%' || :name || '%'")
     suspend fun getByName(name: String): List<User>
 
-    @Query("UPDATE USER SET list = 'black' WHERE licensePlate = :license")
-    suspend fun blackListUser(license: String)
+    @Query("UPDATE USER SET list = 'black' ,reasonForBlackList = :reason WHERE licensePlate = :license ")
+    suspend fun blackListUser(license: String , reason: String)
+
+    @Query("SELECT * FROM USER Where list = 'black'")
+    fun getAllBlackListed(): Flow<List<User>>
+
+
 
 }

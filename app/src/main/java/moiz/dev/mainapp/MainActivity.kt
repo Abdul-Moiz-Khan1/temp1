@@ -31,6 +31,7 @@ import moiz.dev.mainapp.database.UserDatabase
 import moiz.dev.mainapp.screens.AddNew
 import moiz.dev.mainapp.screens.AdminScreen
 import moiz.dev.mainapp.screens.BlackList
+import moiz.dev.mainapp.screens.BlackListedUsersList
 import moiz.dev.mainapp.screens.DownloadReport
 import moiz.dev.mainapp.screens.HomeScreen
 import moiz.dev.mainapp.screens.PinScreen
@@ -94,7 +95,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Routes.AdminScreen,
+                        startDestination = Routes.HomeScreen,
                         modifier = Modifier.padding(innerPadding),
                         builder = {
                             composable(Routes.HomeScreen) {
@@ -117,6 +118,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(Routes.BlackList) {
                                 BlackList(navController = navController , dao = dao)
+                            }
+                            composable(Routes.SeeAllBlackListedUsers) {
+                                BlackListedUsersList(navController = navController , dao = dao)
                             }
                         })
                 }

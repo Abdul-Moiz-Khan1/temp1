@@ -8,4 +8,5 @@ object Routes {
     const val Download = "download"
     const val SeeAll = "seeAll"
     const val BlackList = "blackList"
+    const val SeeAllBlackListedUsers = "seeAllBlackListedUsers"
 }
