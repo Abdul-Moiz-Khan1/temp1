@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -115,8 +116,10 @@ fun AdminItemCard(
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
+                    .size(
+                        200.dp
+                    )
                     .padding(8.dp)
-                    .fillMaxSize()
             )
             Text(
                 text = title1,
@@ -136,6 +139,7 @@ fun AdminItemCard(
                     "See All Entries" -> navController.navigate(Routes.SeeAll)
                     "BlackList Person" -> navController.navigate(Routes.BlackList)
                 }
+
             },
             modifier = Modifier
                 .padding(10.dp)
@@ -147,8 +151,11 @@ fun AdminItemCard(
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
+                    .size(
+                        200.dp
+                    )
                     .padding(8.dp)
-                    .fillMaxSize()
+
             )
             Text(
                 text = title2,
@@ -162,8 +169,6 @@ fun AdminItemCard(
         }
     }
 }
-
-
 
 
 fun ConvertToCSV(list: List<User>): String {

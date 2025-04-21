@@ -13,5 +13,6 @@ data class User(
     val contact:String,
     val date:String,
     val time:String,
-    val list:String
+    val list:String,
+    val reasonForBlackList : String? = null
 )
