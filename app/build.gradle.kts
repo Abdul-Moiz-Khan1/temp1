@@ -77,6 +77,26 @@ dependencies {
     kapt("androidx.room:room-compiler:$room_version")
     kapt("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
+    implementation(libs.pytorch.android)
+    implementation(libs.pytorch.android.torchvision)
+    implementation(libs.tensorflow.lite.support)
+    implementation(libs.tensorflow.lite)
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.10")
+    implementation("org.tensorflow:tensorflow-lite:2.13.0")
+    implementation("org.tensorflow:tensorflow-lite-support:0.4.3")
+    implementation("org.tensorflow:tensorflow-lite-task-vision:0.4.3")
+
+    implementation("com.google.mlkit:text-recognition:16.0.1")
+
+
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.androidx.camera.extensions)
+    implementation(libs.androidx.camera.video)
+    implementation(libs.androidx.camera.mlkit.vision)
+
+    implementation(libs.accompanist.permissions)
 }

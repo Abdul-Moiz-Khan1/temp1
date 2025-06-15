@@ -31,6 +31,7 @@ interface UserDao {
     @Query("SELECT * FROM USER Where list = 'black'")
     fun getAllBlackListed(): Flow<List<User>>
 
-
+    @Query("SELECT list FROM USER WHERE licensePlate = :license")
+     fun getUserListStatus(license: String): String?
 
 }

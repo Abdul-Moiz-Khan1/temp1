@@ -1,9 +1,11 @@
 package moiz.dev.mainapp.database
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "USER")
+@Entity(tableName = "USER",
+    indices = [Index(value = ["licensePlate"], unique = true)])
 data class User(
     @PrimaryKey(autoGenerate = true)  val id:Int = 0,
     val name:String,
@@ -13,6 +15,6 @@ data class User(
     val contact:String,
     val date:String,
     val time:String,
-    val list:String,
+    val list:String     ,
     val reasonForBlackList : String? = null
 )

@@ -110,8 +110,8 @@ fun AddNew(navController: NavController, dao: UserDao) {
             onValueChange = { purpose = it },
             label = { Text(text = "Purpose") })
         Spacer(modifier = Modifier.size(4.dp))
-        Button(onClick = {
-            val currentDate = LocalDateTime.now()
+            Button(onClick = {
+                val currentDate = LocalDateTime.now()
             scope.launch {
                 dao.insertUser(
                     User(
