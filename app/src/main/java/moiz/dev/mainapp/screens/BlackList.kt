@@ -28,8 +28,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import moiz.dev.mainapp.R
+import moiz.dev.mainapp.database.User
 import moiz.dev.mainapp.database.UserDao
+import moiz.dev.mainapp.utils.Lists
 import moiz.dev.mainapp.utils.Routes
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun BlackList(navController: NavController, dao: UserDao) {
@@ -42,7 +46,8 @@ fun BlackList(navController: NavController, dao: UserDao) {
         contentDescription = null,
         modifier = Modifier
             .size(50.dp)
-            .padding(start = 24.dp).clickable { navController.popBackStack() }
+            .padding(start = 24.dp)
+            .clickable { navController.popBackStack() }
     )
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -63,9 +68,25 @@ fun BlackList(navController: NavController, dao: UserDao) {
             label = { Text(text = "Enter Reason for Black List") })
         Spacer(modifier = Modifier.size(4.dp))
         Button(onClick = {
+
+            val currentDate = LocalDateTime.now()
             scope.launch {
-                dao.blackListUser(numberPlate , reason)
+                dao.insertUser(
+                    User(
+                        0,
+                        name = "BlackListed",
+                        cnic = "xxxxx-xxxxxx-x",
+                        licensePlate = numberPlate,
+                        purpose = "No Entry",
+                        contact = "",
+                        date = currentDate.format(DateTimeFormatter.ofPattern("MMMM dd, yyyy")),
+                        time = currentDate.format(DateTimeFormatter.ofPattern("hh:mm:ss a")),
+                        list = Lists.BLACK,
+                        reasonForBlackList = reason
+                    )
+                )
                 Toast.makeText(context, "User Blacklisted", Toast.LENGTH_SHORT).show()
+                navController.navigate(Routes.SeeAllBlackListedUsers)
             }
         }) {
             Text(text = "Confirm")

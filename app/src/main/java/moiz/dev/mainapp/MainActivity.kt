@@ -33,9 +33,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.room.Room
 import moiz.dev.mainapp.dataClasses.BottomNavItems
 import moiz.dev.mainapp.database.UserDatabase
@@ -44,6 +46,7 @@ import moiz.dev.mainapp.screens.AdminScreen
 import moiz.dev.mainapp.screens.BlackList
 import moiz.dev.mainapp.screens.BlackListedUsersList
 import moiz.dev.mainapp.screens.CameraPreview
+import moiz.dev.mainapp.screens.Details
 import moiz.dev.mainapp.screens.DownloadReport
 import moiz.dev.mainapp.screens.PinScreen
 import moiz.dev.mainapp.screens.SeeAll
@@ -132,6 +135,15 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(Routes.SeeAllBlackListedUsers) {
                                 BlackListedUsersList(navController = navController, dao = dao)
+                            }
+                            composable(
+                                route = Routes.DetailsWithArg,
+                                arguments = listOf(navArgument("userId") { type = NavType.IntType })
+                            ) { backStackEntry ->
+                                val userId = backStackEntry.arguments?.getInt("userId")
+                                if (userId != null) {
+                                    Details(navController = navController, dao = dao, userId = userId)
+                                }
                             }
                         })
                 }

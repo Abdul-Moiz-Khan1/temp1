@@ -34,4 +34,7 @@ interface UserDao {
     @Query("SELECT list FROM USER WHERE licensePlate = :license")
      fun getUserListStatus(license: String): String?
 
+    @Query("SELECT * FROM USER WHERE id = :id")
+    fun getUserById(id: Int): User
+
 }

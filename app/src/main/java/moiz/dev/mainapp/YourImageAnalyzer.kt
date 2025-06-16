@@ -1,16 +1,21 @@
 package moiz.dev.mainapp
 
+import android.app.AlarmManager
 import android.app.AlertDialog
+import android.app.PendingIntent
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.media.Image
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.OptIn
@@ -146,16 +151,22 @@ class YourImageAnalyzer(
                 }
 
                 val cleanedText = if (stopIndex != null) input.substring(0, stopIndex) else input
+                Toast.makeText(context, "Detected Text: $cleanedText", Toast.LENGTH_SHORT).show()
+
                 CoroutineScope(Dispatchers.IO).launch {
                     val listType = dao.getUserListStatus(cleanedText)
                     Log.d("OCR", "Detected Text: $cleanedText, ListType: $listType")
 
                     withContext(Dispatchers.Main) {
                         if (listType.equals(Lists.WHITE) || listType.equals(Lists.BLACK)) {
+                            if (listType.equals(Lists.BLACK)) {
+                                setAlarmImmidiate(context)
+                            }
+
                             isInCooldown = true
                             val dialog = AlertDialog.Builder(context)
                                 .setTitle(listType?.uppercase())
-                                .setMessage("This vehicle is on the ${listType?.uppercase()}.")
+                                .setMessage("This vehicle is on the ${listType?.uppercase()} list.")
                                 .setCancelable(false) // Prevent dismiss by touch outside
                                 .create()
 
@@ -166,7 +177,7 @@ class YourImageAnalyzer(
                                 dialog.dismiss()
                                 isInCooldown = false
                             }, 6000)
-                        } else if (!cleanedText.isNullOrEmpty()) {
+                        } else if (!cleanedText.isNullOrEmpty() && cleanedText != "null") {
                             withContext(Dispatchers.IO) {
                                 val currentDate = LocalDateTime.now()
                                 dao.insertUser(
@@ -184,10 +195,11 @@ class YourImageAnalyzer(
                                 )
 
                             }
+                            setAlarmAfter10Minutes(context)
                             isInCooldown = true
                             val dialog = AlertDialog.Builder(context)
-                                .setTitle(listType?.uppercase())
-                                .setMessage("This vehicle is on the ${listType?.uppercase()}.")
+                                .setTitle("GREY")
+                                .setMessage("This vehicle is on the GREY list.")
                                 .setCancelable(false) // Prevent dismiss by touch outside
                                 .create()
 
@@ -276,6 +288,75 @@ fun saveBitmapToGallery(
         Toast.makeText(context, "Image saved: $filename", Toast.LENGTH_SHORT).show()
     } ?: run {
         Toast.makeText(context, "Failed to save image", Toast.LENGTH_SHORT).show()
+    }
+}
+
+fun setAlarmAfter10Minutes(context: Context) {
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (!alarmManager.canScheduleExactAlarms()) {
+            // 🔔 Show prompt or open settings to ask user for permission
+            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+            context.startActivity(intent)
+            return
+        }
+    }
+
+    val intent = Intent(context, AlarmReceiver::class.java)
+    val pendingIntent = PendingIntent.getBroadcast(
+        context,
+        0,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    val triggerTime = System.currentTimeMillis() + 1 * 60 * 1000 // 10 minutes
+
+    try {
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            triggerTime,
+            pendingIntent
+        )
+    } catch (e: SecurityException) {
+        e.printStackTrace()
+        Toast.makeText(context, "Exact alarm permission required", Toast.LENGTH_SHORT).show()
+    }
+}
+
+
+fun setAlarmImmidiate(context: Context) {
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (!alarmManager.canScheduleExactAlarms()) {
+            // 🔔 Show prompt or open settings to ask user for permission
+            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+            context.startActivity(intent)
+            return
+        }
+    }
+
+    val intent = Intent(context, AlarmReceiver::class.java)
+    val pendingIntent = PendingIntent.getBroadcast(
+        context,
+        0,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    val triggerTime = System.currentTimeMillis() + 10000 // 10 minutes
+
+    try {
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            triggerTime,
+            pendingIntent
+        )
+    } catch (e: SecurityException) {
+        e.printStackTrace()
+        Toast.makeText(context, "Exact alarm permission required", Toast.LENGTH_SHORT).show()
     }
 }
 

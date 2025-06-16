@@ -91,17 +91,19 @@ fun AddNew(navController: NavController, dao: UserDao) {
         OutlinedTextField(
             value = cnic,
             onValueChange = { cnic = it },
-            label = { Text(text = "Cnic") })
+            label = { Text(text = "Cnic(without dashes)") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
         Spacer(modifier = Modifier.size(4.dp))
         OutlinedTextField(
             value = numberPlate,
             onValueChange = { numberPlate = it },
-            label = { Text(text = "Licence Plate") })
+            label = { Text(text = "Licence Plate(ABC123)") })
         Spacer(modifier = Modifier.size(4.dp))
         OutlinedTextField(
             value = contact,
             onValueChange = { contact = it },
-            label = { Text(text = "Contact Number") },
+            label = { Text(text = "Contact Number(03121234567)") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
         Spacer(modifier = Modifier.size(4.dp))
@@ -110,8 +112,31 @@ fun AddNew(navController: NavController, dao: UserDao) {
             onValueChange = { purpose = it },
             label = { Text(text = "Purpose") })
         Spacer(modifier = Modifier.size(4.dp))
-            Button(onClick = {
-                val currentDate = LocalDateTime.now()
+        Button(onClick = {
+            if (name.isEmpty() || cnic.isEmpty() || numberPlate.isEmpty() || purpose.isEmpty() || contact.isEmpty()) {
+                Toast.makeText(context, "Please Fill in all Fields", Toast.LENGTH_SHORT).show()
+                return@Button
+            } else {
+                if (cnic.length != 13) {
+                    Toast.makeText(context, "Invalid CNIC", Toast.LENGTH_SHORT).show()
+                    return@Button
+                } else if (name.isEmpty()) {
+                    Toast.makeText(context, "Invalid Name", Toast.LENGTH_SHORT).show()
+                    return@Button
+                } else if (numberPlate.isEmpty()) {
+                    Toast.makeText(context, "Invalid Number Plate", Toast.LENGTH_SHORT).show()
+                    return@Button
+                } else if (purpose.isEmpty()) {
+                    Toast.makeText(context, "Invalid Purpose", Toast.LENGTH_SHORT).show()
+                    return@Button
+                } else if (contact.isEmpty()) {
+                    Toast.makeText(context, "Invalid Contact", Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+            }
+
+
+            val currentDate = LocalDateTime.now()
             scope.launch {
                 dao.insertUser(
                     User(

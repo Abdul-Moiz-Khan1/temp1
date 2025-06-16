@@ -46,7 +46,8 @@ fun BlackListedUsersList(navController: NavController, dao: UserDao) {
             Image(
                 painter = painterResource(id = R.drawable.back),
                 contentDescription = "back",
-                modifier = Modifier.align(Alignment.CenterVertically)
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
                     .size(35.dp)
                     .padding(start = 8.dp)
                     .clickable {
@@ -57,7 +58,10 @@ fun BlackListedUsersList(navController: NavController, dao: UserDao) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
 
             items(blackListedUsers) { item ->
-                ColumnItem(item = item, dao = dao)
+                ColumnItem(
+                    item = item,
+                    dao = dao, navController = navController
+                )
                 HorizontalDivider(color = newBlue)
             }
         }

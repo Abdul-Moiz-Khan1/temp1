@@ -9,4 +9,6 @@ object Routes {
     const val SeeAll = "seeAll"
     const val BlackList = "blackList"
     const val SeeAllBlackListedUsers = "seeAllBlackListedUsers"
+    const val Details = "details"
+    const val DetailsWithArg = "details/{userId}"
 }

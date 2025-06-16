@@ -1,6 +1,10 @@
 package moiz.dev.mainapp.screens
 
 
+import android.R.attr.alpha
+import android.animation.ObjectAnimator
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -28,16 +32,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import moiz.dev.mainapp.R
 import moiz.dev.mainapp.database.User
 import moiz.dev.mainapp.database.UserDao
 import moiz.dev.mainapp.ui.theme.newBlue
 import moiz.dev.mainapp.utils.Lists
+import moiz.dev.mainapp.utils.Routes
 
 
 @Composable
@@ -82,7 +89,7 @@ fun SeeAll(navController: NavController, dao: UserDao) {
 
             val displayList = if (searchText.isEmpty()) allUsers else filteredList
             items(displayList) { item ->
-                ColumnItem(item = item, dao = dao)
+                ColumnItem(item = item, dao = dao , navController)
                 HorizontalDivider(color = newBlue)
             }
         }
@@ -90,15 +97,26 @@ fun SeeAll(navController: NavController, dao: UserDao) {
 }
 
 @Composable
-fun ColumnItem(item: User, dao: UserDao) {
+fun ColumnItem(item: User, dao: UserDao , navController: NavController) {
     val scope = rememberCoroutineScope()
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(start = 4.dp)) {
+    var alpha by remember { mutableStateOf(1f) }
+
+    // Animate alpha change
+    val animatedAlpha by animateFloatAsState(
+        targetValue = alpha,
+        animationSpec = tween(durationMillis = 1000), // 1 second
+        label = "fadeOut"
+    )
+    Row(modifier = Modifier.fillMaxWidth().clickable{
+        navController.navigate("details/${item.id}")
+    }) {
+        Column(modifier = Modifier.padding(start = 4.dp)
+        .graphicsLayer(alpha = animatedAlpha)) {
             Text(text = item.name, fontSize = 20.sp)
             Text(text = item.licensePlate, fontSize = 18.sp)
             Text(text = item.time, fontSize = 16.sp)
-            if(!item.reasonForBlackList.isNullOrEmpty()){
-                Text(text = "Reson: ${item.reasonForBlackList}", fontSize = 13.sp)
+            if (!item.reasonForBlackList.isNullOrEmpty()) {
+                Text(text = "Reason: ${item.reasonForBlackList}", fontSize = 13.sp)
             }
         }
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -112,6 +130,9 @@ fun ColumnItem(item: User, dao: UserDao) {
                     .padding(top = 2.dp)
                     .clickable {
                         scope.launch {
+                            alpha = 0f // fade out
+                            delay(1000)
+                            alpha = 1f
                             dao.deleteUser(item)
                         }
                     }
@@ -121,8 +142,15 @@ fun ColumnItem(item: User, dao: UserDao) {
                 contentDescription = null,
                 colorFilter = if (item.list == Lists.BLACK) androidx.compose.ui.graphics.ColorFilter.tint(
                     Color.Black
-                ) else androidx.compose.ui.graphics.ColorFilter.tint(
-                    Color.Transparent),
+                ) else if (item.list == Lists.WHITE) {
+                    androidx.compose.ui.graphics.ColorFilter.tint(
+                        Color.White
+                    )
+                } else {
+                    androidx.compose.ui.graphics.ColorFilter.tint(
+                        Color.Gray
+                    )
+                },
                 modifier = Modifier
                     .align(Alignment.End)
                     .size(32.dp)
